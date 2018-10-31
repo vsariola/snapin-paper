@@ -2,6 +2,7 @@ function simulate_constant_angle
 
     addpath('../drop-simulator/src');
     addpath('../drop-simulator/src/helpers');
+    addpath('../helpers/');
 
     V = 5; % normalized
     angle = 150; % deg
