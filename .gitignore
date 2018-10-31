@@ -1,0 +1,6 @@
+temp/
+*.asv
+*.pdf
+/**/output/
+/**/~*.docx
+*.png
