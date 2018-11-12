@@ -1,9 +1,9 @@
 [submodule "export_fig"]
 	path = export_fig
 	url = https://github.com/altmany/export_fig
-[submodule "drop-simulator"]
-	path = drop-simulator
-	url = https://github.com/vsariola/drop-simulator
 [submodule "sideaxes-m"]
 	path = sideaxes-m
 	url = https://github.com/vsariola/sideaxes-m
+[submodule "kenmotsu-drop-simulator"]
+	path = kenmotsu-drop-simulator
+	url = https://github.com/vsariola/kenmotsu-drop-simulator
