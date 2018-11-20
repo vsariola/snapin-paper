@@ -14,7 +14,7 @@ function simulate_wa_vs_snapin
         angles{j} = acosd(linspace(cosd(a1)+1,cosd(a2(j))+1,100)-1);
         k = nthroot(3*V(j)/pi + sqrt(1 + (3*V(j)/pi)^2),3);
         hs(j) = k - 1 / k;                 
-        F{j} = par_fun(@(x) drop.create_ar(hs(j),V(j),x,1).force,angles{j})';        
+        F{j} = par_fun(@(x) drop.segment_solve(V(j),'angle',x,'radius',1,'height',hs(j)).force,angles{j})';        
     end
     if ~exist('output','dir')
         mkdir('output');

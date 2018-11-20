@@ -13,7 +13,9 @@ function simulate_r_vs_snapin
         k = nthroot(3*V(j)/pi + sqrt(1 + (3*V(j)/pi)^2),3);
         hs(j) = k - 1 / k;
         
-        F{j} = par_fun(@(x) drop.create_rr(hs(j),V(j),x,1).force,r{j})';        
+        
+        d0 = drop.segment(V(j),'radius',r{1}(1),'radius',1);       
+        F{j} = par_fun(@(x) drop.segment_solve(V(j),'radius',x,'radius',1,'height',hs(j)).force,r{j})';        
     end
     if ~exist('output','dir')
         mkdir('output');

@@ -14,8 +14,7 @@ function plot_schematic
     radius2 = 1;
     V = 5;
     h = 1.5;
-    d = drop.create_ar(h,V,angle1,radius2);
-    radius = d.radius1;
+    d = drop.segment_solve(V,'angle',angle1,'radius',radius2,'height',h);    
 
     ut = d.r;
     zt = d.z;
