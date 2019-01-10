@@ -13,10 +13,11 @@ function plot_experimental_fd
     insy1 = -0.22;
     insy2 = 0.12; 
     
-    color_med = [0.93 0.93 0.93];
+    color_med = [0.85 0.85 0.85];
     color_dark = [0.6 0.6 0.6];
     addpath('../export_fig');
     addpath('../sideaxes-m');
+    addpath('../kenmotsu-drop-simulator/');
     
     left_margin = 0.9;
     bottom_margin = 0.95;
@@ -105,7 +106,7 @@ function plot_experimental_fd
     
     set(gca,'XColor','none')
     set(gca,'YColor','none')    
-    set(gca,'color',color_med);    
+    set(gca,'color','w');    
     
     sideaxes(ax2,'west');
     t = -0.2:0.1:0.1;
@@ -131,8 +132,10 @@ function plot_experimental_fd
 end
 
 function F = analytical_force(r1,r2,V,h)
-    [he,angle] = equilibrium_distance_for_radius(r1,V,r2);
-    angle2 = 180 - asind(sind(angle)*r2/r1);    
+    d = drop.segment(V,'radius',r1,'radius',r2);
+    angle = d.angle1;
+    angle2 = d.angle2;    
+    he = d.height;
     C = log(cotd(angle/2))+log(cotd(angle2/2))-(cosd(angle)+cosd(angle2))/(cosd(angle)*cosd(angle2)+1);
     k = -2*pi/C;    
     F = k*(h-he);
