@@ -28,7 +28,7 @@ function plot_wa_vs_snapin
     ax = axes('units','centimeter','position',[left_margin y main_width main_height]);
     plot_homogeneous_case();
     
-    export_fig('output/Figure_Analytical_vs_Numerical.pdf','-r1200','-nocrop','-painters');
+    export_fig('output/Figure_Analytical_vs_Numerical.png','-r1200','-nocrop','-painters');
 end
 
 function plot_inhomogeneous_case()
@@ -82,8 +82,8 @@ function plot_inhomogeneous_case()
     icons(2).Position = icons(2).Position - [l 0 0];
     
     sideaxes(ax,'south');
-    ticks([0.2 0.3 0.45 0.7 1 1.5],-0.1,'Clipping','off','Color',[0.6 0.6 0.6]);
-    labels([0.2 0.3 0.45 0.7 1 1.5],0.05,[],'FontName','Times New Roman','FontSize',8);    
+    ticks([0.2 0.3 0.4 0.6 0.8 1 1.5],-0.1,'Clipping','off','Color',[0.6 0.6 0.6]);
+    labels([0.2 0.3 0.4 0.6 0.8 1 1.5],0.05,[],'FontName','Times New Roman','FontSize',8);    
     labels(exp(mean(log(xlim(ax)))),0.4,'Radius {\itr}_1/{\itr}_2','FontName','Times New Roman','FontSize',10);
     
     sideaxes(ax,'west');

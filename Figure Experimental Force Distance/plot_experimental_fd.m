@@ -82,8 +82,8 @@ function plot_experimental_fd
     sideaxes(ax,'south');
     t = -50:10:5;
     ticks(t,-0.1,'Clipping','off','Color',color_dark);
-    labels(t,0.05,[],'FontName','Times New Roman','FontSize',8);          
-    labels(mean(xlim(ax)),0.4,'Distance {\ith} (µm)','FontName','Times New Roman','FontSize',10);        
+    labels(t,0.05,@(t)num2str(-t),'FontName','Times New Roman','FontSize',8);          
+    labels(mean(xlim(ax)),0.4,'Distance {\Delta\ith} (µm)','FontName','Times New Roman','FontSize',10);        
         
     [~,icons] = legend([hsim,hanal,hexp],{'Numerical','Analytical','Experimental'},'FontName','Times New Roman','FontSize',8,'Location','SouthEast','box','off');       
     l = 0.08;    
@@ -116,7 +116,7 @@ function plot_experimental_fd
     sideaxes(ax2,'south');
     t = -2:1:1;
     ticks(t,-0.1,'Clipping','off','Color',color_dark);
-    labels(t,0.05,[],'FontName','Times New Roman','FontSize',8);                     
+    labels(t,0.05,@(t)num2str(-t),'FontName','Times New Roman','FontSize',8);                     
     
     export_fig('output/experimental_fd.png','-r1200','-nocrop','-painters');
     
