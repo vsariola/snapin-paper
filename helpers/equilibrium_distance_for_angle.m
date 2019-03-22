@@ -1,4 +1,4 @@
-function [ret,r1] = equilibrium_distance_for_angle(angle,volume,r2)
+function [ret,r1,R] = equilibrium_distance_for_angle(angle,volume,r2)
     if (nargin < 3)
         r2 = 1;
     end    
@@ -10,5 +10,6 @@ function [ret,r1] = equilibrium_distance_for_angle(angle,volume,r2)
     h = @(x) x-sqrt(x^2+r2^2)*cosd(angle);                        
     x_opt = fzero(@(x) V(h(x),sqrt(x^2+r2^2)*sind(angle))-volume,1);            
     ret = h(x_opt);
-    r1 = sqrt(x_opt^2+r2^2)*sind(angle);  
+    R = sqrt(x_opt^2+r2^2)
+    r1 = R*sind(angle);    
 end

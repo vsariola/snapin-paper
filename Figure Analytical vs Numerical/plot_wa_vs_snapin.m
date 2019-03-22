@@ -37,16 +37,19 @@ function plot_inhomogeneous_case()
 
     xx = [0.24 0.265 0.29 0.302 0.33 0.35];
     Fanal = cell(1,length(V));
+    Fanal2 = cell(1,length(V));
     for j = 1:length(V)
         ax.ColorOrderIndex = j;
         plot(r{j},F{j},'-','LineWidth',1);                    
         hold on;
-        Fanal{j} = arrayfun(@(x) analytical_radius(x,V(j),hs(j)),r{j});
+        [Fanal{j},Fanal2{j}] = arrayfun(@(x) analytical_radius(x,V(j),hs(j)),r{j});
         ax.ColorOrderIndex = j;
         plot(r{j},Fanal{j},'--');              
+        ax.ColorOrderIndex = j;
+        plot(r{j},Fanal2{j},':');              
         x = xx(j);
-        y1 = interp1(r{j},Fanal{j},x);
-        y2 = interp1(r{j},Fanal{j},x+0.01);
+        y1 = interp1(r{j},Fanal2{j},x);
+        y2 = interp1(r{j},Fanal2{j},x+0.01);
         rot = atan2d((log(y2)-log(y1))*0.16,log(x+0.01) - log(x));        
         if j == 1
             t = sprintf('{\\itV}/{\\itr}_2^3 = %g',V(j));
@@ -74,12 +77,15 @@ function plot_inhomogeneous_case()
     %text(x,y,'Numerical','FontName','Times New Roman','FontSize',7,'Rotation',6,'HorizontalAlign','center','VerticalAlign','bottom');        
     h_num = plot(nan, nan, 'k-','LineWidth',1);
     h_anal = plot(nan, nan, 'k--');
-    [~,icons] = legend([h_anal,h_num],{'Analytical','Numerical'},'FontName','Times New Roman','FontSize',7,'Location','NorthWest','box','off');       
+    h_anal2 = plot(nan, nan, 'k:');
+    [~,icons] = legend([h_anal,h_anal2,h_num],{'Analytical, linear (1)','Analytical, quadratic (2)','Numerical'},'FontName','Times New Roman','FontSize',7,'Location','NorthWest','box','off');       
     l = 0.08;
-    icons(3).XData = icons(3).XData - [0 l];
-    icons(5).XData = icons(5).XData - [0 l];
+    icons(4).XData = icons(4).XData - [0 l];
+    icons(6).XData = icons(6).XData - [0 l];
+    icons(8).XData = icons(8).XData - [0 l];
     icons(1).Position = icons(1).Position - [l 0 0];
     icons(2).Position = icons(2).Position - [l 0 0];
+    icons(3).Position = icons(3).Position - [l 0 0];
     
     sideaxes(ax,'south');
     ticks([0.2 0.3 0.4 0.6 0.8 1 1.5],-0.1,'Clipping','off','Color',[0.6 0.6 0.6]);
@@ -116,9 +122,12 @@ function plot_homogeneous_case()
         hold on;
         angles_anal = linspace(angles{j}(1),acosd(1.2-1));
         wa_anal = 1+cosd(angles_anal);
-        Fanal = arrayfun(@(x) analytical_angle(x,V(j),hs(j)),angles_anal);
+        [Fanal,Fanal2] = arrayfun(@(x) analytical_angle(x,V(j),hs(j)),angles_anal);
         ax.ColorOrderIndex = j*2-1;
         plot(wa_anal,Fanal,'--');
+        ax.ColorOrderIndex = j*2-1;
+        hold on;
+        plot(wa_anal,Fanal2,':');
 
         x = xx(j);
         y1 = interp1(wa_anal,Fanal,x);
@@ -145,14 +154,16 @@ function plot_homogeneous_case()
     
     h_num = plot(nan, nan, 'k-','LineWidth',1);
     h_anal = plot(nan, nan, 'k--');
-    [~,icons] = legend([h_anal,h_num],{'Analytical','Numerical'},'FontName','Times New Roman','FontSize',7,'Location','NorthWest','box','off');       
+    h_anal2 = plot(nan, nan, 'k:');
+    [~,icons] = legend([h_anal,h_anal2,h_num],{'Analytical, linear (1)','Analytical, quadratic (2)','Numerical'},'FontName','Times New Roman','FontSize',7,'Location','NorthWest','box','off');       
     l = 0.08;
-    icons(3).XData = icons(3).XData - [0 l];
-    icons(5).XData = icons(5).XData - [0 l];
-    icons(1).Position = icons(1).Position - [l 0 0];
-    icons(2).Position = icons(2).Position - [l 0 0];
-    
-    
+    icons(4).XData = icons(4).XData - [0 l];
+    icons(6).XData = icons(6).XData - [0 l];
+    icons(8).XData = icons(8).XData - [0 l];
+    for k = 1:3
+        icons(k).Position = icons(k).Position - [l 0 0];
+    end
+        
     sideaxes(ax,'west');
     ticks([1e-2 1e-1 1 10],-0.1,'Clipping','off','Color',[0.6 0.6 0.6]);
     labels([1e-2 1e-1 1 10],0.05,[],'FontName','Times New Roman','FontSize',8);          
@@ -169,20 +180,31 @@ function plot_homogeneous_case()
     labels(0.77e-3,0.45,'\theta_1 \approx','FontName','Times New Roman','FontSize',10,'horizontalalign','center','clipping','off');       
 end
 
-function F = analytical_angle(angle,V,hs)
-    [he,re] = equilibrium_distance_for_angle(angle,V);
+function [F,F2] = analytical_angle(angle,V,hs)
+    [he,re,R] = equilibrium_distance_for_angle(angle,V);
     angle2 = 180 - asind(sind(angle)/re);
     f = (cotd(angle)+cscd(angle)*cosd(angle2))^2+1;    
     C = log(cotd(angle/2))+log(cotd(angle2/2))-(cosd(angle)+cosd(angle2))/(cosd(angle)*cosd(angle2)+f);
     k = 2*pi/C;    
     F = -k*(hs-he);
+    
+    D = log(cotd(angle/2))+log(cotd(angle2/2));
+    d2F = -(6*(cosd(angle2)+1))*pi*(cosd(angle2)-1)*(16*cosd(angle)^5*(1/3)-6*cosd(angle)^7+7*cosd(angle)^9*(1/3)-10*cosd(angle2)^3*(1/3)-5*cosd(angle2)^3*cosd(angle)^2*(1/3)-cosd(angle2)^5-(1/3)*cosd(angle)^11+4*cosd(angle)^8*cosd(angle2)-30*cosd(angle)^7*cosd(angle2)^2+10*cosd(angle)^9*cosd(angle2)^2+3*cosd(angle)^7*cosd(angle2)^4+17*cosd(angle2)^2*cosd(angle)^5+64*cosd(angle2)^3*cosd(angle)^4+33*cosd(angle2)*cosd(angle)^4+31*cosd(angle2)^2*cosd(angle)^3-8*cosd(angle2)*cosd(angle)^2-12*cosd(angle2)^2*cosd(angle)-22*cosd(angle)^5*cosd(angle2)^4-3*cosd(angle)^4*cosd(angle2)^5+40*cosd(angle)^3*cosd(angle2)^4+10*cosd(angle)^2*cosd(angle2)^5-6*cosd(angle)*cosd(angle2)^4-22*cosd(angle2)*cosd(angle)^6-152*cosd(angle)^6*cosd(angle2)^3*(1/3)-cosd(angle)^11*cosd(angle2)^2-cosd(angle)^10*cosd(angle2)^3+cosd(angle)*cosd(angle2)^6+(1+cosd(angle2)^6+3*cosd(angle2)^4+3*cosd(angle2)^2-cosd(angle)^2+cosd(angle)^11*cosd(angle2)^3-cosd(angle)^2*cosd(angle2)^6+3*cosd(angle)^3*cosd(angle2)^3+9*cosd(angle)*cosd(angle2)-12*cosd(angle)^3*cosd(angle2)+24*cosd(angle)^2*cosd(angle2)^2+9*cosd(angle)*cosd(angle2)^5-10*cosd(angle)^9*cosd(angle2)^3-3*cosd(angle)^8*cosd(angle2)^4-3*cosd(angle2)^2*cosd(angle)^8+36*cosd(angle)^7*cosd(angle2)^3+21*cosd(angle)^6*cosd(angle2)^4+3*cosd(angle)^5*cosd(angle2)^5+21*cosd(angle2)^2*cosd(angle)^6-48*cosd(angle)^5*cosd(angle2)^3-45*cosd(angle)^4*cosd(angle2)^4-12*cosd(angle)^3*cosd(angle2)^5+3*cosd(angle)^5*cosd(angle2)-45*cosd(angle2)^2*cosd(angle)^4+24*cosd(angle)^2*cosd(angle2)^4+18*cosd(angle)*cosd(angle2)^3)*D-cosd(angle2)-cosd(angle)+38*cosd(angle)^8*cosd(angle2)^3*(1/3)+2*cosd(angle)^3*(1/3))/((1+cosd(angle))*sind(angle2)^2*(cosd(angle)-1)*((cosd(angle)^3*cosd(angle2)-3*cosd(angle)*cosd(angle2)-cosd(angle2)^2-1)*D-cosd(angle)^3-cosd(angle2)*cosd(angle)^2+cosd(angle)+cosd(angle2))^3);
+    q = 1/2 * d2F / R;
+    F2 = -k*(hs-he)-q*(hs-he).^2;    
 end
 
-function F = analytical_radius(re,V,hs)
-    [he,angle] = equilibrium_distance_for_radius(re,V);
+function [F,F2] = analytical_radius(re,V,hs)
+    [he,angle,R] = equilibrium_distance_for_radius(re,V);
     angle2 = 180 - asind(sind(angle)/re);
     f = 1;
     C = log(cotd(angle/2))+log(cotd(angle2/2))-(cosd(angle)+cosd(angle2))/(cosd(angle)*cosd(angle2)+f);
     k = 2*pi/C;    
     F = -k*(hs-he);
+        
+    D = log(cotd(angle/2))+log(cotd(angle2/2));
+    X = cosd(angle)+cosd(angle2);
+    Y = (cosd(angle)*cosd(angle2)+1);        
+    q = pi*(3*D*Y^3-X^3-3*X*Y^2)/(D*Y-X)^3/R;   
+    F2 = -k*(hs-he)-q*(hs-he).^2;    
 end

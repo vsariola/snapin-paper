@@ -51,7 +51,9 @@ function plot_experimental_fd
     he = 0; % The data has already been shifted so that he = 0    
             
     anal_dist = linspace(-60,10);
-    anal_force = arrayfun(@(x) Dsim.gamma * analytical_force(Dsim.pillarradius*1e-6,Dsim.a,Dsim.Vunnormalized,x),anal_dist);
+    [anal_force,anal_force2] = arrayfun(@(x) analytical_force(Dsim.pillarradius*1e-6,Dsim.a,Dsim.Vunnormalized,x*1e-6),anal_dist);
+    anal_force = anal_force * 1e6 * Dsim.gamma;
+    anal_force2 = anal_force2 * 1e6 * Dsim.gamma;
     
     plot_all;     
     xlim([x1 x2]);
@@ -85,14 +87,16 @@ function plot_experimental_fd
     labels(t,0.05,@(t)num2str(-t),'FontName','Times New Roman','FontSize',8);          
     labels(mean(xlim(ax)),0.4,'Distance {\Delta\ith} (µm)','FontName','Times New Roman','FontSize',10);        
         
-    [~,icons] = legend([hsim,hanal,hexp],{'Numerical','Analytical','Experimental'},'FontName','Times New Roman','FontSize',8,'Location','SouthEast','box','off');       
-    l = 0.08;    
+    [~,icons] = legend([hsim,hanal2,hanal,hexp],{'Numerical','Analytical, quadratic (2)','Analytical, linear (1)','Experimental'},'FontName','Times New Roman','FontSize',8,'Location','SouthEast','box','off');       
+    l = 0.08;        
     icons(1).Position = icons(1).Position - [l 0 0];
     icons(2).Position = icons(2).Position - [l 0 0];
     icons(3).Position = icons(3).Position - [l 0 0];
-    icons(4).XData = icons(4).XData - [0 l];
-    icons(6).XData = icons(6).XData - [0 l];
-    icons(8).XData = icons(8).XData - [0 l];
+    icons(4).Position = icons(4).Position - [l 0 0];
+    icons(5).XData = icons(5).XData - [0 l];
+    icons(7).XData = icons(7).XData - [0 l];
+    icons(9).XData = icons(9).XData - [0 l];
+    icons(11).XData = icons(11).XData - [0 l];
     
     axes(ax2);
     plot_all;       
@@ -125,18 +129,24 @@ function plot_experimental_fd
         hold on;        
 
         hanal = plot(anal_dist,anal_force,'b--','LineWidth',0.5);
+        hanal2 = plot(anal_dist,anal_force2,'b:','LineWidth',0.5);
         hsim = plot(Dsim.sim_dist,Dsim.sim_force,'b-','LineWidth',0.5);    
         hexp = plot(Dexp.exp_dist,Dexp.exp_force,'r-','LineWidth',0.5);
         hold off;  
     end
 end
 
-function F = analytical_force(r1,r2,V,h)
+function [F,F2] = analytical_force(r1,r2,V,h)
     d = drop.segment(V,'radius',r1,'radius',r2);
     angle = d.angle1;
-    angle2 = d.angle2;    
-    he = d.height;
+    angle2 = d.angle2;        
     C = log(cotd(angle/2))+log(cotd(angle2/2))-(cosd(angle)+cosd(angle2))/(cosd(angle)*cosd(angle2)+1);
     k = -2*pi/C;    
-    F = k*(h-he);
+    F = k*h;
+    
+    D = log(cotd(angle/2))+log(cotd(angle2/2));
+    X = cosd(angle)+cosd(angle2);
+    Y = (cosd(angle)*cosd(angle2)+1);        
+    q = pi*(3*D*Y^3-X^3-3*X*Y^2)/(D*Y-X)^3/d.R;   
+    F2 = k*h+q*h.^2;    
 end
