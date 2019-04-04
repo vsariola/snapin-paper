@@ -10,6 +10,6 @@ function [ret,r1,R] = equilibrium_distance_for_angle(angle,volume,r2)
     h = @(x) x-sqrt(x^2+r2^2)*cosd(angle);                        
     x_opt = fzero(@(x) V(h(x),sqrt(x^2+r2^2)*sind(angle))-volume,1);            
     ret = h(x_opt);
-    R = sqrt(x_opt^2+r2^2)
+    R = sqrt(x_opt^2+r2^2);
     r1 = R*sind(angle);    
 end
