@@ -28,4 +28,8 @@ function simulate_constant_angle
     zts = downsample(d.z);
     uts = downsample(d.r);   
     
+    if ~exist('output','dir')
+        mkdir('output');
+    end
+    
     save('output/constant_angle.mat','V','angle','F','h','hs','he','re','zte','ute','zts','uts');
