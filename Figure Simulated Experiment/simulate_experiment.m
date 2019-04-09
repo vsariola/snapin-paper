@@ -13,7 +13,7 @@ maxh = 1.7e-3;
 minh = 0.7e-3;
 pulloff_h = 1.56e-3;
 
-angle0 = d.cap(Vt,'radius',1).angle1;
+angle0 = drop.cap(Vt,'radius',1).angle1;
 
 data = [];
 for h = maxh:-step:hs
